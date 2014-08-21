@@ -19,7 +19,7 @@ FILE="log.log"
 TIME="%H:%M:%S"
 KEYWORD="WARNING"
 
-while getopts ":h:f:t:k" opt; do
+while getopts "hf:t:k:" opt; do
     case $opt in 
         h)
             usage
@@ -41,8 +41,6 @@ while getopts ":h:f:t:k" opt; do
             ;;
     esac
 done
-
-echo $KEYWORD
 
 FROM=$(date +%b" "%d" "$TIME -d "-1 hour")
 NOW=$(date +%b" "%d" "$TIME)
