@@ -45,5 +45,5 @@ done
 FROM=$(date +%b" "%d" "$TIME -d "-1 hour")
 NOW=$(date +%b" "%d" "$TIME)
 
-LINES=`awk '($0 >= from){++n}END{print n}' from="$(LC_TIME=C date +'%b %d %H:%M:%S' -d -1hour)" $FILE`
+LINES=`awk '($0 >= from){++n}END{print n}' from="$(LC_TIME=C date +'%b %d $TIME' -d -1hour)" $FILE`
 tail -$LINES $FILE | grep -c "$KEYWORD"
