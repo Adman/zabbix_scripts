@@ -15,7 +15,7 @@ OPTIONS:
 EOF
 }
 
-FILE="log.log"
+FILE="/var/log/auth.log"
 TIME="%H:%M:%S"
 KEYWORD="WARNING"
 
@@ -45,5 +45,19 @@ done
 FROM=$(date +%b" "%d" "$TIME -d "-1 hour")
 NOW=$(date +%b" "%d" "$TIME)
 
-LINES=`awk '($0 >= from){++n}END{print n}' from="$(LC_TIME=C date +'%b %d $TIME' -d -1hour)" $FILE`
-tail -$LINES $FILE | grep -c "$KEYWORD"
+COUNT=0
+
+tac $FILE | \
+while read CMD; do
+    AVAILABLE=`awk "($0 >= from){++n}END{print n}" from="$(LC_TIME=C date +"%b %d $TIME" -d -1hour)" $CMD`
+    if [ $AVAILABLE > 0 ]; then
+       COUNT+=`grep -c $KEYWORD`
+    else
+        break
+    fi
+done
+
+echo $COUNT
+
+#LINES=`awk '($0 >= from){++n}END{print n}' from="$(LC_TIME=C date +'%b %d $TIME' -d -1hour)" $FILE`
+#tail -$LINES $FILE | grep -c "$KEYWORD"
