@@ -51,7 +51,6 @@ while read line; do
     currentDate=$(date -d "$(awk '{print $1,$2,$3}' <(echo $line))" "+%s")
     if [ $currentDate -gt $startDate ]; then
         FOUND=`echo $line | grep -c $KEYWORD`
-        echo $line
         if [[ "$FOUND" == "1" ]]; then
             COUNT=$((COUNT + 1))
         fi
