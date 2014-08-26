@@ -42,22 +42,21 @@ while getopts "hf:t:k:" opt; do
     esac
 done
 
-FROM=$(date +%b" "%d" "$TIME -d "-1 hour")
-NOW=$(date +%b" "%d" "$TIME)
 
 COUNT=0
 
+startDate=$(date +%s -d -1hour)
 tac $FILE | \
-while read CMD; do
-    AVAILABLE=`awk "($0 >= from){++n}END{print n}" from="$(LC_TIME=C date +"%b %d $TIME" -d -1hour)" $CMD`
-    if [ $AVAILABLE > 0 ]; then
-       COUNT+=`grep -c $KEYWORD`
+while read line; do
+    currentDate=$(date -d "$(awk '{print $1,$2,$3}' <(echo $line))" "+%s")
+    if [ $currentDate -gt $startDate ]; then
+        FOUND=`echo $line | grep -c $KEYWORD`
+        echo $line
+        if [[ "$FOUND" == "1" ]]; then
+            COUNT=$((COUNT + 1))
+        fi
     else
+        echo $COUNT
         break
     fi
 done
-
-echo $COUNT
-
-#LINES=`awk '($0 >= from){++n}END{print n}' from="$(LC_TIME=C date +'%b %d $TIME' -d -1hour)" $FILE`
-#tail -$LINES $FILE | grep -c "$KEYWORD"
