@@ -10,14 +10,14 @@ This script reads given log and shows number of errors, warnings etc. in last ho
 OPTIONS:
     -h      Show this message
     -f      Log file to check
-    -r      Root file which will be added to check
+    -r      Rotated file which will be added to check
     -t      Time regex (default %H:%M:%S)
     -k      Keyword to look for in log (default WARNING)
 EOF
 }
 
 FILE="/var/log/auth.log"
-ROOT_FILE=""
+ROTATED_FILE=""
 TIME="%H:%M:%S"
 KEYWORD="WARNING"
 
@@ -31,7 +31,7 @@ while getopts "hf:r:t:k:" opt; do
             FILE="$OPTARG"
             ;;
         r)
-            ROOT_FILE="$OPTARG"
+            ROTATED_FILE="$OPTARG"
             ;;
         t)
             TIME="$OPTARG"
@@ -51,7 +51,7 @@ done
 COUNT=0
 
 startDate=$(date +%s -d -1hour)
-tac $FILE $ROOT_FILE | \
+tac $FILE $ROTATED_FILE | \
 while read line; do
     currentDate=$(date -d "$(awk '{print $1,$2,$3}' <(echo $line))" "+%s")
     if [ $currentDate -gt $startDate ]; then
