@@ -12,12 +12,14 @@ OPTIONS:
     -f      Log file to check
     -t      Time regex (default %H:%M:%S)
     -k      Keyword to look for in log (default WARNING)
+    -d      Regular expression for date/time reading from log
 EOF
 }
 
 FILE="/var/log/auth.log"
 TIME="%H:%M:%S"
 KEYWORD="WARNING"
+DATE_REGEX="^[A-Za-z]{3} [0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}"
 
 while getopts "hf:t:k:" opt; do
     case $opt in 
@@ -34,6 +36,9 @@ while getopts "hf:t:k:" opt; do
         k)
             KEYWORD="$OPTARG"
             ;;
+        d)
+            DATE_REGEX="$OPTARG"
+            ;;
         \?)
             echo "Invalid option"
             usage
@@ -48,14 +53,17 @@ COUNT=0
 startDate=$(date +%s -d -1hour)
 tac $FILE | \
 while read line; do
-    currentDate=$(date -d "$(awk '{print $1,$2,$3}' <(echo $line))" "+%s")
-    if [ $currentDate -gt $startDate ]; then
-        FOUND=`echo $line | grep -c $KEYWORD`
-        if [[ "$FOUND" == "1" ]]; then
-            COUNT=$((COUNT + 1))
+    dateString=`echo $line | grep -oE "$DATE_REGEX" | head -n 1`
+    if [ -n "$dateString" ]; then
+        currentDate=`date -d "$dateString" "+%s"`
+        if [ $currentDate -gt $startDate ]; then
+            FOUND=`echo $line | grep -c $KEYWORD`
+            if [[ "$FOUND" == "1" ]]; then
+                COUNT=$((COUNT + 1))
+            fi
+        else
+            echo $COUNT
+            exit
         fi
-    else
-        echo $COUNT
-        break
     fi
 done
