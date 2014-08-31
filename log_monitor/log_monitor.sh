@@ -23,7 +23,7 @@ TIME="%H:%M:%S"
 KEYWORD="WARNING"
 DATE_REGEX="^[A-Za-z]{3} [0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}"
 
-while getopts "hf:r:t:k:" opt; do
+while getopts "hf:r:t:k:d:" opt; do
     case $opt in 
         h)
             usage
