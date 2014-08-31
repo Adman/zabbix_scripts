@@ -72,3 +72,5 @@ while read line; do
         fi
     fi
 done
+
+echo $COUNT
