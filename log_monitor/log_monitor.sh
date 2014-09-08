@@ -63,7 +63,7 @@ while read line; do
         currentDate=`date -d "$dateString" "+%s"`
         if [ $currentDate -gt $startDate ]; then
             FOUND=`echo $line | grep -c $KEYWORD`
-            if [[ "$FOUND" == "1" ]]; then
+            if [ "$FOUND" == "1" ]; then
                 COUNT=$((COUNT + 1))
             fi
         else
